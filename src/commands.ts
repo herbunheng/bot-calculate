@@ -19,7 +19,7 @@ export async function handleCommand(chatId: string, userId: string, username: st
 
 	// --- Register Command ---
 	if (command === '/register' || command === '📝 ចុះឈ្មោះនៅទីនេះ') {
-		await env.DB.prepare('INSERT OR IGNORE INTO users (user_id, username) VALUES (?, ?)').bind(userId, username).run();
+		await env.bot_db.prepare('INSERT OR IGNORE INTO users (user_id, username) VALUES (?, ?)').bind(userId, username).run();
 		return sendMessage(chatId, '✅ <b>ចុះឈ្មោះជោគជ័យ!</b>', env, { reply_markup: { remove_keyboard: true } });
 	}
 
@@ -44,7 +44,7 @@ export async function handleCommand(chatId: string, userId: string, username: st
 		}
 
 		// Query for total amounts
-		const amountResults = await env.DB.prepare(
+		const amountResults = await env.bot_db.prepare(
 			`
       SELECT currency, SUM(amount) as total 
       FROM transactions 
@@ -56,7 +56,7 @@ export async function handleCommand(chatId: string, userId: string, username: st
 			.all();
 
 		// Query for total tips
-		const tipResults = await env.DB.prepare(
+		const tipResults = await env.bot_db.prepare(
 			`
       SELECT tip_currency as currency, SUM(tip_amount) as total 
       FROM transactions 

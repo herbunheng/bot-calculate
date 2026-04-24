@@ -24,7 +24,6 @@
 			"binding": "bot_db",
 			"database_name": "bot-db",
 			"database_id": "f7fa98e0-2e5c-4f80-83ef-cb23b0a1c482",
-			"remote": true,
 		},
 	],
 }
