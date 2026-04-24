@@ -2,9 +2,26 @@ import { Env } from './types';
 import { sendMessage } from './telegram';
 import { parseBankMessage } from './parser';
 import { handleCommand } from './commands';
+import { handleAdminPage, handleAdminStats } from './admin';
 
 export default {
 	async fetch(request: Request, env: Env): Promise<Response> {
+		if (request.method === 'GET') {
+			const url = new URL(request.url);
+
+			// Serve the Admin Dashboard UI
+			if (url.pathname === '/admin') {
+				return await handleAdminPage();
+			}
+
+			// JSON API for the Dashboard
+			if (url.pathname === '/api/stats') {
+				return await handleAdminStats(env);
+			}
+
+			return new Response('Bot is running! Visit /admin for dashboard.', { headers: { 'Content-Type': 'text/plain' } });
+		}
+
 		if (request.method !== 'POST') return new Response('OK');
 
 		try {
@@ -80,13 +97,6 @@ export default {
 							.run();
 
 						console.log('[INDEX] DB insert success');
-
-						let responseMsg = `✅ <b>កត់ត្រារួចរាល់៖</b>\n💰 <b>${bankData.amount} ${bankData.currency}</b>`;
-						if (bankData.tip_amount > 0) {
-							responseMsg += `\n🎁 Tips: <b>${bankData.tip_amount} ${bankData.tip_currency}</b>`;
-						}
-
-						await sendMessage(chatId, responseMsg, env);
 					} catch (e: any) {
 						if (e.message?.includes('UNIQUE constraint failed')) {
 							console.log('[INDEX] Duplicate transaction:', trx_id);

@@ -72,7 +72,8 @@ export async function handleCommand(chatId: string, userId: string, username: st
 			.bind(chatId)
 			.all();
 
-		let reportMsg = `📊 <b>របាយការណ៍ចំណូល (${periodName})៖</b>\n\n`;
+		let reportMsg = `📊 <b>របាយការណ៍ចំណូល (${periodName})៖</b>\n`;
+		reportMsg += `📜 <i>(ផ្អែកលើប្រវត្តិដែលបានកត់ត្រា)</i>\n\n`;
 
 		const summary: Record<string, { amount: number; tip: number }> = {};
 
@@ -111,14 +112,14 @@ export async function handleCommand(chatId: string, userId: string, username: st
 	if (command === '/history') {
 		const kvKey = `history:${chatId}`;
 		const historyStr = await env.KV.get(kvKey);
-		
+
 		if (!historyStr) {
 			return sendMessage(chatId, '📜 <b>មិនទាន់មានប្រវត្តិសារនៅឡើយទេ។</b>', env);
 		}
 
 		const history = JSON.parse(historyStr);
 		let historyMsg = `📜 <b>ប្រវត្តិសារចុងក្រោយ ២០ (Recent History):</b>\n\n`;
-		
+
 		history.forEach((m: any, i: number) => {
 			historyMsg += `${i + 1}. <b>${m.username}:</b> ${m.text}\n`;
 		});
