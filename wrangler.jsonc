@@ -4,29 +4,27 @@
 	"main": "src/index.ts",
 	"compatibility_date": "2026-04-24",
 	"observability": {
-		"enabled": true
+		"enabled": true,
 	},
 	"upload_source_maps": true,
 	"vars": {
 		"SECRET_TOKEN": "hengxx2",
-		"TELEGRAM_BOT_TOKEN": "8109345570:AAF9Y1gQr3L71sI7xP8ZJAaszQJKFRyIRko"
+		"TELEGRAM_BOT_TOKEN": "8109345570:AAF9Y1gQr3L71sI7xP8ZJAaszQJKFRyIRko",
 	},
-	"compatibility_flags": [
-		"nodejs_compat"
-	],
+	"compatibility_flags": ["nodejs_compat"],
 	"kv_namespaces": [
 		{
 			"binding": "KV",
 			"id": "d1da02dc3d87480f861a6d3714a19193",
-			"remote": true
-		}
+			"remote": true,
+		},
 	],
 	"d1_databases": [
 		{
-			"binding": "DB",
+			"binding": "bot_db",
 			"database_name": "bot-db",
 			"database_id": "f7fa98e0-2e5c-4f80-83ef-cb23b0a1c482",
-			"remote": true
-		}
-	]
+			"remote": true,
+		},
+	],
 }

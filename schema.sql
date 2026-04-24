@@ -11,6 +11,8 @@ CREATE TABLE transactions (
     group_id TEXT,
     amount REAL,
     currency TEXT, -- USD ឬ KHR
+    tip_amount REAL DEFAULT 0,
+    tip_currency TEXT,
     trx_id TEXT UNIQUE,
     raw_text TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
