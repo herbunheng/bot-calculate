@@ -12,6 +12,7 @@ export async function handleCommand(chatId: string, userId: string, username: st
 			`• /today - របាយការណ៍ចំណូលថ្ងៃនេះ\n` +
 			`• /week - របាយការណ៍ចំណូល ៧ ថ្ងៃចុងក្រោយ\n` +
 			`• /month - របាយការណ៍ចំណូលខែនេះ\n` +
+			`• /history - បង្ហាញប្រវត្តិសារចុងក្រោយ\n` +
 			`• /help - បង្ហាញជំនួយ\n\n`;
 
 		if (chatType === 'private') {
@@ -104,5 +105,24 @@ export async function handleCommand(chatId: string, userId: string, username: st
 		}
 
 		return sendMessage(chatId, reportMsg, env);
+	}
+
+	// --- History Command ---
+	if (command === '/history') {
+		const kvKey = `history:${chatId}`;
+		const historyStr = await env.KV.get(kvKey);
+		
+		if (!historyStr) {
+			return sendMessage(chatId, '📜 <b>មិនទាន់មានប្រវត្តិសារនៅឡើយទេ។</b>', env);
+		}
+
+		const history = JSON.parse(historyStr);
+		let historyMsg = `📜 <b>ប្រវត្តិសារចុងក្រោយ ២០ (Recent History):</b>\n\n`;
+		
+		history.forEach((m: any, i: number) => {
+			historyMsg += `${i + 1}. <b>${m.username}:</b> ${m.text}\n`;
+		});
+
+		return sendMessage(chatId, historyMsg, env);
 	}
 }

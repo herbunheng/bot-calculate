@@ -44,6 +44,24 @@ export default {
 
 			console.log('[INDEX] chatType:', chatType, 'command:', command);
 
+			// --- Save to History (D1 & KV Cache) ---
+			try {
+				// 1. Save to D1 (Permanent Storage)
+				await env.DB.prepare('INSERT INTO messages (group_id, user_id, username, text, message_id) VALUES (?, ?, ?, ?, ?)')
+					.bind(chatId, userId, username, text, msg.message_id)
+					.run();
+
+				// 2. Save to KV (Short-term cache for performance)
+				const kvKey = `history:${chatId}`;
+				const historyStr = await env.KV.get(kvKey);
+				let history = historyStr ? JSON.parse(historyStr) : [];
+				history.push({ username, text, time: new Date().toISOString() });
+				if (history.length > 20) history = history.slice(-20); // Keep last 20 messages
+				await env.KV.put(kvKey, JSON.stringify(history), { expirationTtl: 86400 * 7 }); // Keep for 7 days
+			} catch (historyErr) {
+				console.error('[INDEX] Failed to save history:', historyErr);
+			}
+
 			// 1. Try to parse as a bank message first
 			const bankData = parseBankMessage(text);
 

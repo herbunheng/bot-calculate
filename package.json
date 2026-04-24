@@ -4,8 +4,8 @@
 	"private": true,
 	"scripts": {
 		"deploy": "wrangler deploy",
-		"d1:local:migrate": "wrangler d1 execute bot-db --local --file schema.sql",
-		"d1:remote:migrate": "wrangler d1 execute bot-db --remote --file schema.sql",
+		"db:local": "wrangler d1 execute bot-db --local --file schema.sql",
+		"db:remote": "wrangler d1 execute bot-db --remote --file schema.sql",
 		"dev": "wrangler dev",
 		"test": "vitest",
 		"cf-typegen": "wrangler types"
