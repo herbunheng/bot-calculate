@@ -1,18 +1,19 @@
 import { Transaction } from './types';
 
 export function parseBankMessage(text: string): Transaction | null {
+	console.log('[PARSER] Attempting to parse:', text.substring(0, 100));
+
 	// Main amount regexes
 	const usdRegex = /(?:\$|USD)\s?(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)/i;
 	const khrRegex = /(?:៛|KHR|RIELS)\s?(\d+(?:,\d+)?)|(\d+(?:,\d+)?)\s?(?:៛|KHR|RIELS)/i;
 	const trxRegex = /(?:Trx\.?\s*ID|លេខប្រតិបត្តិការ)\s*:?\s*(\d+)/i;
 
-	// FIX 1: Tip regex now handles optional words before the amount ("a $0.25 tip", "with a $0.25 tip")
-	// Also handles "tip" appearing anywhere after the amount (not just immediately after)
+	// Tip regex - handles "a $0.25 tip", "$0.25 tip", "with a $0.25 tip"
 	const tipUsdRegex = /\ba\s+(?:\$|USD)\s?(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\s+tip\b/i;
 	const tipUsdSimpleRegex = /(?:\$|USD)\s?(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\s+tip\b/i;
 	const tipKhrRegex = /(\d+(?:,\d+)?)\s?(?:៛|KHR|RIELS)\s+tip\b|(?:៛|KHR|RIELS)\s?(\d+(?:,\d+)?)\s+tip\b/i;
 
-	// 1. Extract tip first (try "a $X.XX tip" pattern first, then simpler "$X.XX tip")
+	// 1. Extract tip first
 	let tip_amount = 0;
 	let tip_currency: string | null = null;
 	let mainSearchText = text;
@@ -21,7 +22,6 @@ export function parseBankMessage(text: string): Transaction | null {
 	const tipKhrMatch = text.match(tipKhrRegex);
 
 	if (tipUsdMatch || tipKhrMatch) {
-		// Prefer whichever appears first
 		const tipUsdIndex = tipUsdMatch ? text.indexOf(tipUsdMatch[0]) : Infinity;
 		const tipKhrIndex = tipKhrMatch ? text.indexOf(tipKhrMatch[0]) : Infinity;
 
@@ -35,12 +35,15 @@ export function parseBankMessage(text: string): Transaction | null {
 			tip_currency = 'KHR';
 			mainSearchText = text.replace(tipKhrMatch[0], '');
 		}
+		console.log('[PARSER] Tip found:', tip_amount, tip_currency);
 	}
 
-	// 2. Find the main amount in the remaining text (with tip portion removed)
+	// 2. Find main amount in remaining text
 	const usdMatch = mainSearchText.match(usdRegex);
 	const khrMatch = mainSearchText.match(khrRegex);
 	const trxMatch = text.match(trxRegex);
+
+	console.log('[PARSER] USD match:', usdMatch?.[0], 'KHR match:', khrMatch?.[0], 'Trx:', trxMatch?.[1]);
 
 	if (usdMatch || khrMatch) {
 		const usdIndex = usdMatch ? mainSearchText.indexOf(usdMatch[0]) : Infinity;
@@ -53,6 +56,8 @@ export function parseBankMessage(text: string): Transaction | null {
 		const amount = parseFloat(amountStr.replace(/,/g, ''));
 		const currency = isUSD ? 'USD' : 'KHR';
 
+		console.log('[PARSER] Parsed successfully:', { amount, currency, tip_amount, tip_currency });
+
 		return {
 			amount,
 			currency,
@@ -62,5 +67,6 @@ export function parseBankMessage(text: string): Transaction | null {
 		};
 	}
 
+	console.log('[PARSER] No amount found, returning null');
 	return null;
 }
