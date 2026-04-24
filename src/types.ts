@@ -1,5 +1,5 @@
 export interface Env {
-  bot_db: D1Database;
+  DB: D1Database;
   TELEGRAM_BOT_TOKEN: string;
 }
 

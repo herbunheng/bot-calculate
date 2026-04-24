@@ -27,10 +27,9 @@ export default {
 				if (chatType === 'group' || chatType === 'supergroup') {
 					const trx_id = bankData.trx_id || `m_${Date.now()}_${userId}`;
 					try {
-						await env.bot_db
-							.prepare(
-								'INSERT INTO transactions (group_id, amount, currency, tip_amount, tip_currency, trx_id, raw_text) VALUES (?, ?, ?, ?, ?, ?, ?)',
-							)
+						await env.DB.prepare(
+							'INSERT INTO transactions (group_id, amount, currency, tip_amount, tip_currency, trx_id, raw_text) VALUES (?, ?, ?, ?, ?, ?, ?)',
+						)
 							.bind(chatId, bankData.amount, bankData.currency, bankData.tip_amount, bankData.tip_currency, trx_id, text)
 							.run();
 
