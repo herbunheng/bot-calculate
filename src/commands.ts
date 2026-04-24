@@ -2,19 +2,28 @@ import { Env } from './types';
 import { sendMessage } from './telegram';
 
 export async function handleCommand(chatId: string, userId: string, username: string, command: string, chatType: string, env: Env) {
-	// --- Private Chat Logic ---
-	if (chatType === 'private') {
-		if (command === '/start' || command === '/help') {
-			const msg =
-				`👋 <b>សួស្តី ${username}!</b>\n\n` +
-				`នេះគឺជាប៊ូតសម្រាប់កត់ត្រាចំណូលស្វ័យប្រវត្តិ។\n\n` +
-				`<b>ការណែនាំ៖</b>\n` +
+	
+	// --- Help / Start Command (Universal) ---
+	if (command === '/help' || command === '/start') {
+		let msg = `👋 <b>សួស្តី ${username}!</b>\n\n` +
+			`នេះគឺជាប៊ូតសម្រាប់កត់ត្រាចំណូលស្វ័យប្រវត្តិ។\n\n` +
+			`<b>បញ្ជីពាក្យបញ្ជា (Command List):</b>\n` +
+			`• /register - ចុះឈ្មោះគណនីរបស់អ្នក\n` +
+			`• /today - របាយការណ៍ចំណូលថ្ងៃនេះ\n` +
+			`• /week - របាយការណ៍ចំណូល ៧ ថ្ងៃចុងក្រោយ\n` +
+			`• /month - របាយការណ៍ចំណូលខែនេះ\n` +
+			`• /help - បង្ហាញជំនួយ\n\n`;
+
+		if (chatType === 'private') {
+			msg += `<b>ការណែនាំ៖</b>\n` +
 				`១. ចុច /register ដើម្បីចុះឈ្មោះ\n` +
 				`២. បន្ថែមប៊ូតនេះទៅក្នុង <b>Group</b> របស់អ្នក\n` +
-				`៣. កំណត់ប៊ូតជា <b>Admin</b> ដើម្បីឱ្យវាអាចអានសារបាន\n\n` +
-				`ប៊ូតនឹងចាប់យកសារបញ្ជាក់ការផ្ទេរប្រាក់ដោយស្វ័យប្រវត្តិ!`;
-			return sendMessage(chatId, msg, env);
+				`៣. កំណត់ប៊ូតជា <b>Admin</b> និងបិទ <b>Privacy Mode</b> ក្នុង @BotFather ដើម្បីឱ្យវាអាចអានសារបាន។`;
+		} else {
+			msg += `💡 <b>Tip:</b> ប៊ូតនឹងកត់ត្រាសារបញ្ជាក់ការផ្ទេរប្រាក់ដោយស្វ័យប្រវត្តិ រួមទាំងប្រាក់ឧបត្ថម្ភ (Tips) ផងដែរ។`;
 		}
+		
+		return sendMessage(chatId, msg, env);
 	}
 
 	// --- Register Command ---
